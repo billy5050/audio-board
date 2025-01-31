@@ -1,0 +1,425 @@
+/* リセット */
+body, h1, h2, h3, p, ul, li, a, button {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* ベーススタイル */
+body {
+    background-color: #f9f4ee; /* ベージュ系 */
+    line-height: 1.6;
+    margin: 0 16%;
+    padding: 0;
+}
+
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    text-align: center;
+}
+
+/* ヘッダー */
+h1 {
+    font-size: 2.5em;
+    color: #4b3832; /* 濃いブラウン */
+    text-align: center;
+}
+
+h2, h3 {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    color: #602D1D; /* 柔らかいブラウン */
+}
+
+p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.user_message{
+	text-align: right;
+	font-size: 0.9rem;
+	font-weight: bold;
+	margin: 0;
+}
+
+a {
+	text-decoration:underline;
+}
+
+.site-title a{
+    text-align: center;;
+    color: #4b3832; /* 濃いブラウン */
+    text-decoration:none;
+}
+
+/* 検索フォーム */
+.search-form {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.search-box{
+    gap: 10px;
+}
+.search-form input[type="text"] {
+    width: 40%;
+    padding: 10px;
+    font-size: 1em;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background-color: #4b3832; /* 濃いブラウン */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #6b4f4b; /* 柔らかいブラウン */
+}
+
+/* ナビゲーション */
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f3ebe2; /* 薄いベージュ */
+    border-radius: 5px;
+}
+
+nav ul li {
+    background-color: #e8d8ca; /* 柔らかいブラウン */
+    padding: 8px;
+    border-radius: 5px;
+}
+
+nav ul li a {
+    color: #4b3832;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: white;
+    background-color: #4b3832; /* 濃いブラウン */
+    padding: 8px;
+    border-radius: 3px;
+}
+
+/* スレッドリスト */
+ul.thread-list {
+    padding: 10px;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul.thread-list2 {
+	display: flex;
+	justify-content: center;
+    padding: 10px;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul.thread-list li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f4ee; /* ベージュ */
+    border: 1px solid #e8d8ca;
+    border-radius: 5px;
+}
+
+ul.thread-list2 li {
+    margin-right: 5px;
+    padding: 10px;
+    background-color: #f9f4ee; /* ベージュ */
+    border: 1px solid #e8d8ca;
+    border-radius: 5px;
+}
+
+ul.thread-list li a {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4b3832;
+}
+
+ul.thread-list li a:hover {
+    text-decoration: underline;
+}
+
+ul.thread-list ul {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+    margin-top: 5px;
+    padding-left: 15px;
+}
+
+ul.thread-list ul li {
+    font-size: 0.9em;
+    color: #4b3832;
+    background-color: #e8d8ca;
+    font-weight: bold;
+}
+
+/* ボタン */
+button, .button {
+    background-color: #4b3832; /* 濃いブラウン */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    text-align: center;
+}
+
+button:hover, .button:hover {
+    background-color: #6b4f4b; /* 柔らかいブラウン */
+}
+
+.add-button{
+	text-align: right;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 0;
+    background-color: #4b3832;
+    color: white;
+    font-size: 0.9em;
+    border-radius: 5px;
+}
+
+footer p{
+	color: white;
+}
+
+.signup-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.signup-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.signup-form .form-group {
+    margin-bottom: 15px;
+}
+
+.signup-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.signup-form .form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.signup-form .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.thread-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.thread-title {
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.thread-description {
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-control {
+    width: 90%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.form-checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.comment-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.comment-header {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.comment-number {
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
+}
+
+.comment-body {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+    
+}
+
+.comment-form textarea {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.mypage-container {
+    width: 80%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.mypage-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.mypage-container section {
+    margin-bottom: 40px;
+}
+
+.mypage-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.mypage-container li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.mypage-container li a {
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.mypage-container li a:hover {
+    text-decoration: underline;
+}
+
+.mypage-container small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+}
+
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-link {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+.pagination a {
+    padding: 5px 10px;
+    margin: 2px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+}
+.pagination .current {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
