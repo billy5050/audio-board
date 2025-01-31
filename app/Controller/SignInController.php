@@ -41,6 +41,7 @@ class SignInController extends AppController {
             } else {
                 // 認証失敗
                 $this->Session->setFlash('ログインに失敗しました。メールアドレスまたはパスワードが間違っています。');
+                $this->render('/Board/SignIn');
             }
         }
     }

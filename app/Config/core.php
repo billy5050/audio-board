@@ -227,7 +227,13 @@
  * the cake shell command: cake schema create Sessions
  */
 	Configure::write('Session', array(
-		'defaults' => 'php'
+		'defaults' => 'php',
+	    //'timeout' => 30,  // 30分でセッション切れ
+	    'cookieTimeout' => 0,
+	    'checkAgent' => true,
+	    'autoRegenerate' => true,
+	    //'secure' => true,  // HTTPSのみ
+	    //'httponly' => true // JavaScriptでのアクセス禁止
 	));
 
 /**
