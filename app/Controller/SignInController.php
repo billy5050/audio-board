@@ -10,7 +10,7 @@ class SignInController extends AppController {
     
     public function SignIn() {
         if ($this->request->is('post')) {
-            debug($this->request->data);
+//             debug($this->request->data);
             $email = $this->request->data['User']['email'];
             $password = $this->request->data['User']['password'];
             
@@ -36,7 +36,7 @@ class SignInController extends AppController {
                         // 他のスレッド情報を表示
                     }
                 } else {
-                    echo '<p>現在、人気スレッドはありません。</p>';
+                    echo h('<p>現在、人気スレッドはありません。</p>');
                 }
             } else {
                 // 認証失敗

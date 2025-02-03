@@ -20,6 +20,7 @@ class ThreadsController extends AppController {
             if (!empty($keyword)) {
                 $conditions = [
                     'Thread.title LIKE' => '%' . mb_convert_kana($keyword, 's') . '%'
+                    ,'Thread.invalid_flag' => '0'
                 ];
                 $results = $this->Thread->find('all', [
                     'conditions' => $conditions,
@@ -28,8 +29,18 @@ class ThreadsController extends AppController {
                 
                 $latestThreads = $this->_getThreads('latest');
                 $popularThreads = $this->_getThreads('popular');
+                $latestLists = [];
+                foreach($latestThreads as $thread){
+                    array_push($latestLists, $this->_getThreadsCounts($thread['Thread']['id']));
+                }
+                
+                $popularLists = [];
+                foreach($popularThreads as $thread){
+                    array_push($popularLists, $this->_getThreadsCounts($thread['Thread']['id']));
+                }
+                
                 $formData = $this->_getFormData();
-                $this->set(array_merge(compact('results', 'keyword', 'latestThreads', 'popularThreads', 'userName'), $formData));
+                $this->set(array_merge(compact('results', 'keyword', 'latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName'), $formData));
                 $this->render('/Board/Top');
             } else {
                 return $this->redirect(['controller' => 'Threads', 'action' => 'allList']);
@@ -45,6 +56,15 @@ class ThreadsController extends AppController {
         $userName = !empty($this->Auth->user('user_name')) ? $this->Auth->user('user_name') : 'ゲスト';
         $latestThreads = $this->_getThreads('latest');
         $popularThreads = $this->_getThreads('popular');
+        $latestLists = [];
+        foreach($latestThreads as $thread){
+            array_push($latestLists, $this->_getThreadsCounts($thread['Thread']['id']));
+        }
+        
+        $popularLists = [];
+        foreach($popularThreads as $thread){
+            array_push($popularLists, $this->_getThreadsCounts($thread['Thread']['id']));
+        }
         
         $threads = $this->Thread->find('all', [
             'contain' => ['Tag'], // 関連するタグ情報を取得
@@ -62,12 +82,13 @@ class ThreadsController extends AppController {
                     'conditions' => ['Tag.id = ThreadsTag.tag_id']
                 ],
             ],
-            'conditions' => ['Tag.id' => $tagId],
+            'conditions' => ['Tag.id' => $tagId
+                ,'Thread.invalid_flag' => '0'],
         ]);
         
         $tagName = $this->Thread->Tag->field('name', ['id' => $tagId]);
         $formData = $this->_getFormData();
-        $this->set(array_merge(compact('threads', 'tagName', 'userName', 'latestThreads', 'popularThreads'), $formData));
+        $this->set(array_merge(compact('threads', 'tagName', 'userName', 'latestThreads', 'popularThreads','latestLists', 'popularLists'), $formData));
         $this->render('/Board/Top');
     }
     
@@ -80,13 +101,17 @@ class ThreadsController extends AppController {
         
         // 自分が作成したスレッド一覧を取得
         $myThreads = $this->Thread->find('all', [
-            'conditions' => ['Thread.created_by' => $userId],
+            'conditions' => ['Thread.created_by' => $userId
+                            ,'Thread.invalid_flag' => '0'
+                            ],
             'order' => ['Thread.created_at' => 'DESC']
         ]);
         
         // 自分が投稿したコメント一覧を取得
         $myComments = $this->Post->find('all', [
-            'conditions' => ['Post.created_by' => $userId],
+            'conditions' => ['Post.created_by' => $userId
+                            ,'Post.invalid_flag' => '0'
+                            ],
             'order' => ['Post.created_at' => 'DESC'],
             'contain' => ['Thread'] // 関連するスレッド情報も取得
         ]);
@@ -138,22 +163,17 @@ class ThreadsController extends AppController {
     }
     
     public function view($id = null) {
-        $thread = $this->Thread->find('first', [
-            'conditions' => ['Thread.id' => $id],
-            'contain' => ['User'] // テーブルと関連付けてデータを取得
-        ]);
-        
         if (!$id || !$this->Thread->exists($id)) {
             throw new NotFoundException(__('Invalid thread'));
         }
         // スレッドデータを取得
         $thread = $this->Thread->find('first', [
-            'conditions' => ['Thread.id' => $id],
+            'conditions' => ['Thread.id' => $id
+                            ,'Thread.invalid_flag' => '0'],
             'contain' => [
                 'User', // スレッド作成者の情報
-                'Post' => [
-                    'User' // 各コメントの投稿者の情報も取得
-                ],
+                'Post' => ['User' // 各コメントの投稿者の情報も取得
+                          ],
                 'Tag'
             ]
         ]);
@@ -164,11 +184,6 @@ class ThreadsController extends AppController {
     }
     
     public function viewCnt($id = null) {
-        $thread = $this->Thread->find('first', [
-            'conditions' => ['Thread.id' => $id],
-            'contain' => ['User'] // テーブルと関連付けてデータを取得
-        ]);
-        
         if (!$id || !$this->Thread->exists($id)) {
             throw new NotFoundException(__('Invalid thread'));
         }
@@ -181,16 +196,19 @@ class ThreadsController extends AppController {
         
         // スレッドデータを取得
         $thread = $this->Thread->find('first', [
-            'conditions' => ['Thread.id' => $id],
+            'conditions' => ['Thread.id' => $id
+                            ,'Thread.invalid_flag' => '0'
+                            ],
             'contain' => [
                 'User', // スレッド作成者の情報
                 'Post' => [
+//                     'conditions' => ['Post.invalid_flag' => '0'],
                     'User' // 各コメントの投稿者の情報も取得
                 ],
                 'Tag'
             ]
         ]);
-        //debug($thread);
+//         debug($thread);
 //         exit;
         $this->set(compact('thread')); 
         $this->render('/Board/view');  

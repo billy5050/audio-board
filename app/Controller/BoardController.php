@@ -30,8 +30,7 @@ class BoardController extends AppController {
             'fields' => ['Tag.id', 'Tag.name'],
             'order' => ['Tag.id' => 'ASC']
         ]);
-        $this->set(array_merge(compact('latestThreads', 'popularThreads', 'latestLists','popularLists', 'userName', 'tags'), $formData));
-//         $this->set(compact('latestCounts', 'popularCounts'));
+        $this->set(array_merge(compact('latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName', 'tags'), $formData));
         $this->render('/Board/Top');
     }
     

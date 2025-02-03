@@ -36,6 +36,7 @@ class AppController extends Controller {
     
     public function beforeFilter() {
         parent::beforeFilter();
+        $this->Auth->authError = false;
         // 認証不要のアクションを許可
         $this->Auth->allow(['login', 'logout', 'SignIn', 'SignUp', 'top', 'display', 'about', 'view','viewCnt', 'alllist', 'search', 'tagSearch']);
         
@@ -119,9 +120,11 @@ class AppController extends Controller {
         }
         
         return $this->Thread->find('all', [
-            'contain' => ['Tag'], // 関連するタグ情報を取得
+            'contain' => ['Tag'], // 関連するタグ情報を取得,
+            'conditions' => ['invalid_flag' => '0'],
             'order' => $order,
             'limit' => $limit,
         ]);
     }
+
 }

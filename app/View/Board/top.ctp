@@ -81,7 +81,6 @@
         <?php endforeach; ?>
     </ul>
 <?php else: ?>
-	
 <?php endif; ?>
 <p></p>
 <nav>
@@ -111,66 +110,74 @@
 </nav>
 <!-- すべてのスレッド -->
 <h3>最新のスレッド</h3>
-<ul class="thread-list">
-<?php 
-foreach ($latestThreads as $thread): ?>
-    <li>
-        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
-            <?= h($thread['Thread']['title']) ?>
-            <?php
-            // デフォルト値 (コメントがない場合は 0)
-            $commentCount = 0;
-
-            // スレッド ID に対応するコメント数を検索
-            foreach ($latestLists as $threadCount) {
-                if (!empty($threadCount[0]['Post']['thread_id']) && $threadCount[0]['Post']['thread_id'] == $thread['Thread']['id']) {
-                    $commentCount = !empty($threadCount[0][0]['comment_count']) ? $threadCount[0][0]['comment_count'] : 0;
-                    break; // 該当スレッドが見つかったらループを抜ける
-                }
-            }
-            ?>
-            (<?= h($commentCount) ?>)
-        </a>
-        <?php if (!empty($thread['Tag'])): ?>
-            <ul>
-                <?php foreach ($thread['Tag'] as $tag): ?>
-                    <li><?= h($tag['name']) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </li>
-<?php endforeach; ?>
-
-</ul>
+<?php if (!empty($latestThreads)): ?>
+	<ul class="thread-list">
+	<?php foreach ($latestThreads as $thread): ?>
+	    <li>
+	        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
+	            <?= h($thread['Thread']['title']) ?>
+	            <?php
+	            // デフォルト値 (コメントがない場合は 0)
+	            $commentCount = 0;
+	
+	            // スレッド ID に対応するコメント数を検索
+	            foreach ($latestLists as $threadCount) {
+	                if (!empty($threadCount[0]['Post']['thread_id']) && $threadCount[0]['Post']['thread_id'] == $thread['Thread']['id']) {
+	                    $commentCount = !empty($threadCount[0][0]['comment_count']) ? $threadCount[0][0]['comment_count'] : 0;
+	                    break; // 該当スレッドが見つかったらループを抜ける
+	                }
+	            }
+	            ?>
+	            (<?= h($commentCount) ?>)
+	        </a>
+	        <?php if (!empty($thread['Tag'])): ?>
+	            <ul>
+	                <?php foreach ($thread['Tag'] as $tag): ?>
+	                    <li><?= h($tag['name']) ?></li>
+	                <?php endforeach; ?>
+	            </ul>
+	        <?php endif; ?>
+	    </li>
+	<?php endforeach; ?>
+	</ul>
+	<?php else:?>
+		<?= h('現在最新のスレッド情報はありません。');?>
+<?php endif; ?>
+<h2></h2>
 <h3>人気のスレッド</h3>
-<ul class="thread-list">
-<?php foreach ($popularThreads as $thread): ?>
-    <li>
-        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
-            <?= h($thread['Thread']['title']) ?>
-            <?php
-            // デフォルト値 (コメントがない場合は 0)
-            $commentCount = 0;
+<?php if (!empty($popularThreads)): ?>
+	<ul class="thread-list">
+	<?php foreach ($popularThreads as $thread): ?>
+	    <li>
+	        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
+	            <?= h($thread['Thread']['title']) ?>
+	            <?php
+	            // デフォルト値 (コメントがない場合は 0)
+	            $commentCount = 0;
+	
+	            // スレッド ID に対応するコメント数を検索
+	            foreach ($popularLists as $threadCount) {
+	                if (!empty($threadCount[0]['Post']['thread_id']) && $threadCount[0]['Post']['thread_id'] == $thread['Thread']['id']) {
+	                    $commentCount = !empty($threadCount[0][0]['comment_count']) ? $threadCount[0][0]['comment_count'] : 0;
+	                    break; // 該当スレッドが見つかったらループを抜ける
+	                }
+	            }
+	            ?>
+	            (<?= h($commentCount) ?>)
+	        </a>
+	        <ul>
+	            <?php foreach ($thread['Tag'] as $tag): ?>
+	                <li><?= h($tag['name']) ?></li>
+	            <?php endforeach; ?>
+	        </ul>
+	        (<?= h($thread['Thread']['view_count']) ?> 閲覧)
+	    </li>
+	<?php endforeach; ?>
+	</ul>
+	<?php else:?>
+		<?= h('現在人気のスレッド情報はありません。');?>
+<?php endif; ?>
 
-            // スレッド ID に対応するコメント数を検索
-            foreach ($popularLists as $threadCount) {
-                if (!empty($threadCount[0]['Post']['thread_id']) && $threadCount[0]['Post']['thread_id'] == $thread['Thread']['id']) {
-                    $commentCount = !empty($threadCount[0][0]['comment_count']) ? $threadCount[0][0]['comment_count'] : 0;
-                    break; // 該当スレッドが見つかったらループを抜ける
-                }
-            }
-            ?>
-            (<?= h($commentCount) ?>)
-        </a>
-        <ul>
-            <?php foreach ($thread['Tag'] as $tag): ?>
-                <li><?= h($tag['name']) ?></li>
-            <?php endforeach; ?>
-        </ul>
-        (<?= h($thread['Thread']['view_count']) ?> 閲覧)
-    </li>
-<?php endforeach; ?>
-</ul>
 <div class="add-button">
 	<?= $this->Html->link('スレッド一覧', ['controller' => 'Threads', 'action' => 'allList']); ?>
 </div>

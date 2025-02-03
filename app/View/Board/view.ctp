@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="container">
-            <h1 class="site-title"><a href="<?= $this->Html->url('/') ?>">オーディオ掲示板</a></h1>
+            <h1 class="site-title">オーディオ掲示板</h1>
             <nav>
                 <ul>
                     <li><?= $this->Html->link('TOP', ['controller' => 'Board', 'action' => 'top']); ?></li>
@@ -42,26 +42,43 @@
         <ul class="comments-list">
             <?php $cnt = 1; ?>
             <?php foreach ($thread['Post'] as $post): ?>
-                <li class="comment-item" id="comment-<?= h($cnt); ?>">
-                    <div class="comment-header">
-                        <span class="comment-number"><?= h($cnt); ?>.</span>
-                        <strong>ユーザー名:</strong> <?= h($post['User']['user_name']); ?>
-                        <strong> 投稿日時:</strong> <?= h($post['created_at']); ?>
-                    </div>
-					<div class="comment-body">
-						<p>
-						    <?php
-						        // コメント内の @番号 を #comment-番号 へのリンクに変換
-						        $commentContent = preg_replace_callback('/@(\d+)/', function ($matches) {
-						            return '<a href="#comment-' . h($matches[1]) . '">@' . h($matches[1]) . '</a>';
-						        }, h($post['content']));
-						
-						        // 変換後のコメントを出力（改行も適用）
-						        echo nl2br($commentContent);
-						    ?>
-						</p>
-					</div>
-                </li>
+            	<?php if ($thread['Post'][$cnt-1]['invalid_flag'] === false):?>
+	                <li class="comment-item" id="comment-<?= h($cnt); ?>">
+	                    <div class="comment-header">
+	                        <span class="comment-number"><?= h($cnt); ?>.</span>
+	                        <strong>ユーザー名:</strong> <?= h($post['User']['user_name']); ?>
+	                        <strong> 投稿日時:</strong> <?= h($post['created_at']); ?>
+	                    </div>
+						<div class="comment-body">
+							<p>
+							    <?php
+							        // コメント内の @番号 を #comment-番号 へのリンクに変換
+							        $commentContent = preg_replace_callback('/@(\d+)/', function ($matches) {
+							            return '<a href="#comment-' . h($matches[1]) . '">@' . h($matches[1]) . '</a>';
+							        }, h($post['content']));
+							
+							        // 変換後のコメントを出力（改行も適用）
+							        echo nl2br($commentContent);
+							    ?>
+							</p>
+						</div>
+	                </li>
+	               <?php else: ?>
+	               		<li class="comment-item" id="comment-<?= h($cnt); ?>">
+		                    <div class="comment-header">
+		                        <span class="comment-number"><?= h($cnt); ?>.</span>
+		                        <strong>ユーザー名:</strong> <?= h('*****'); ?>
+	                        	<strong> 投稿日時:</strong> <?= h($post['created_at']); ?>
+		                    </div>
+		            		<div class="comment-body">
+								<strong>
+								    <?php
+								        echo h('このコメントは管理者によって削除されました。');
+								    ?>
+								</strong>
+							</div>
+		                </li>
+	               <?php endif; ?>
                 <?php $cnt++; ?>
             <?php endforeach; ?>
         </ul>

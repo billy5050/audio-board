@@ -10,7 +10,7 @@
 	</head>
 	<header>
         <div class="container">
-            <h1 class="site-title"><a href="<?= $this->Html->url('/') ?>">オーディオ掲示板</a></h1>
+            <h1 class="site-title">オーディオ掲示板</h1>
             <nav>
                 <ul>
                     <li><?= $this->Html->link('TOP', ['controller' => 'Board', 'action' => 'top']); ?></li>
