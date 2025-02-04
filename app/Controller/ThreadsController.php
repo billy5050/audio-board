@@ -113,9 +113,10 @@ class ThreadsController extends AppController {
                             ,'Post.invalid_flag' => '0'
                             ],
             'order' => ['Post.created_at' => 'DESC'],
-            'contain' => ['Thread'] // 関連するスレッド情報も取得
+            'contain' => ['Thread']
         ]);
         
+//         debug($myComments);
         // データをビューに渡す
         $this->set(compact('myThreads', 'myComments'));
         $this->render('/Board/mypage');

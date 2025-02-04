@@ -24,7 +24,7 @@ class Thread extends AppModel {
         'Post' => [
             'className' => 'Post',
             'foreignKey' => 'thread_id',
-            'dependent' => true // スレッド削除時に関連投稿も削除する場合
+            //'dependent' => true // スレッド削除時に関連投稿も削除する場合
         ]
     ];
 }

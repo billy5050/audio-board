@@ -49,5 +49,4 @@ class SignUpController extends AppController {
             }
         }
     }
-    
 }

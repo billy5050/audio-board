@@ -14,8 +14,7 @@ class BoardController extends AppController {
         
         $latestThreads = $this->_getThreads('latest');
         $popularThreads = $this->_getThreads('popular');
-        
-        //検証中    
+         
         $latestLists = [];
         foreach($latestThreads as $thread){            
             array_push($latestLists, $this->_getThreadsCounts($thread['Thread']['id']));
