@@ -43,6 +43,20 @@
 <h3>すべてのスレッド</h3>
 <ul class="thread-list">
 <?php foreach ($allThreads as $thread): ?>
+	<?php 
+	    // スレッドが無効か、スレッド作成者が無効ならスキップ
+	    $isThreadInvalid = $thread['Thread']['invalid_flag'] != 0;
+	    $isThreadOwnerInvalid = false;
+	    foreach ($userLists as $user) {
+	        if ($user['User']['id'] === $thread['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+	            $isThreadOwnerInvalid = true;
+	            break; // ループを抜ける
+	        }
+	    }
+	    if ($isThreadInvalid || $isThreadOwnerInvalid) {
+	        continue; // スキップ
+	    }
+	?>
     <li>
         <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
             <?= h($thread['Thread']['title']) ?>

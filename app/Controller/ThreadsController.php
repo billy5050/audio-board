@@ -38,9 +38,9 @@ class ThreadsController extends AppController {
                 foreach($popularThreads as $thread){
                     array_push($popularLists, $this->_getThreadsCounts($thread['Thread']['id']));
                 }
-                
+                $userLists = $this->User->find('all');
                 $formData = $this->_getFormData();
-                $this->set(array_merge(compact('results', 'keyword', 'latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName'), $formData));
+                $this->set(array_merge(compact('results', 'keyword', 'latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName', 'userLists'), $formData));
                 $this->render('/Board/Top');
             } else {
                 return $this->redirect(['controller' => 'Threads', 'action' => 'allList']);
@@ -86,9 +86,10 @@ class ThreadsController extends AppController {
                 ,'Thread.invalid_flag' => '0'],
         ]);
         
+        $userLists = $this->User->find('all');
         $tagName = $this->Thread->Tag->field('name', ['id' => $tagId]);
         $formData = $this->_getFormData();
-        $this->set(array_merge(compact('threads', 'tagName', 'userName', 'latestThreads', 'popularThreads','latestLists', 'popularLists'), $formData));
+        $this->set(array_merge(compact('threads', 'tagName', 'userName', 'userLists', 'latestThreads', 'popularThreads','latestLists', 'popularLists'), $formData));
         $this->render('/Board/Top');
     }
     
@@ -116,9 +117,13 @@ class ThreadsController extends AppController {
             'contain' => ['Thread']
         ]);
         
+        // 検証中
+        $userLists = $this->User->find('all');
+        
 //         debug($myComments);
+//         debug($userLists);
         // データをビューに渡す
-        $this->set(compact('myThreads', 'myComments'));
+        $this->set(compact('myThreads', 'myComments', 'userLists'));
         $this->render('/Board/mypage');
     }
     
@@ -178,9 +183,9 @@ class ThreadsController extends AppController {
                 'Tag'
             ]
         ]);
-        //debug($thread);
-//      exit;
-        $this->set(compact('thread'));
+//         debug($thread);
+        $userLists = $this->User->find('all');
+        $this->set(compact('thread', 'userLists'));
         $this->render('/Board/view');
     }
     
@@ -189,7 +194,7 @@ class ThreadsController extends AppController {
             throw new NotFoundException(__('Invalid thread'));
         }
         
-        //閲覧数をカウントアップ
+        //閲覧数をカウントアップ   
         $this->Thread->updateAll(
             ['Thread.view_count' => 'Thread.view_count + 1'],
             ['Thread.id' => $id]
@@ -210,8 +215,8 @@ class ThreadsController extends AppController {
             ]
         ]);
 //         debug($thread);
-//         exit;
-        $this->set(compact('thread')); 
+        $userLists = $this->User->find('all');
+        $this->set(compact('thread', 'userLists')); 
         $this->render('/Board/view');  
     }
     
@@ -232,7 +237,8 @@ class ThreadsController extends AppController {
         foreach($allThreads as $thread){
             array_push($allLists, $this->_getThreadsCounts($thread['Thread']['id']));
         }
-        $this->set(compact('allThreads', 'allLists', 'userName'));
+        $userLists = $this->User->find('all');
+        $this->set(compact('allThreads', 'allLists', 'userName', 'userLists'));
         $this->render('/Board/alllist');
     }
     
@@ -241,20 +247,42 @@ class ThreadsController extends AppController {
             $userId = $this->Auth->user('id');// ユーザーがログインしている場合、ログインユーザーのidを取得
             $dataSource = $this->Post->getDataSource();
             $dataSource->begin();//トランザクション開始
-            //debug($this->request->data);//データベースデバック
-            //exit;
             try{
                 $this->Post->create();
-                $this->request->data['Post']['created_by'] = $userId;
-//                 debug($this->request->data);//データベースデバック
-//                 exit;
-                // Postの保存
-                if ($this->Post->save($this->request->data)) {
+                $data = $this->request->data;
+                // 画像の処理
+                if (!empty($data['Post']['image']['tmp_name'])) {
+                    $file = $data['Post']['image'];
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid() . '.' . $ext; // ユニークなファイル名を作成
+                    $uploadPath = WWW_ROOT . 'img/uploads/' . $filename;
+                    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                        $data['Post']['image_path'] = 'img/uploads/' . $filename; // DBにはパスのみ保存
+                    }else{
+                        debug("ファイルの移動に失敗しました: " . $uploadPath);
+                        exit;
+                    }
+                }
+                $data['Post']['created_by'] = $userId;
+                
+                $ngLists = Configure::read('NgLists');
+                
+                // 投稿内容から不適切ワードを置換
+                foreach ($ngLists as $ngWord) {
+                    if (stripos($data['Post']['content'], $ngWord) !== false) {
+                        // NGワードを *** に置換
+                        $data['Post']['content'] = str_ireplace($ngWord, '***', $data['Post']['content']);
+                    }
+                }
+                
+                // **ループが終わった後に保存する！**
+                if ($this->Post->save($data)) {
                     $dataSource->commit();
                     $this->Session->setFlash('コメントを投稿しました！');
                     // スレッドIDを取得し、viewメソッドにリダイレクト
                     $threadId = $this->request->data['Post']['thread_id'];
-                    return $this->redirect(['controller' => 'Threads', 'action' => 'view', $threadId]);}
+                    return $this->redirect(['controller' => 'Threads', 'action' => 'view', $threadId]);
+                }
             }catch (Exception $e){
                 $dataSource->rollback();//保存のエラー時ロールバック
                 $this->Session->setFlash($e->getMessage());

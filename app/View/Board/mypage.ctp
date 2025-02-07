@@ -48,22 +48,33 @@
 			<h2>自分が投稿したコメント</h2>
 			<?php if (!empty($myComments)): ?>
 			    <ul>
-			        <?php foreach ($myComments as $comment): ?>
-			            <?php if (isset($comment['Thread']['invalid_flag']) && $comment['Thread']['invalid_flag'] != 0): ?>
-			                <!-- 無効なスレッドの場合は表示しない、または「削除済み」などのメッセージを表示 -->
-			                <?php continue; // 表示せずスキップする場合 ?>
-			            <?php endif; ?>
-			            <li>
-			                <p><?php echo nl2br(h($comment['Post']['content'])); ?></p>
-			                <small>
-			                    コメント先: 
-			                    <a href="<?php echo $this->Html->url(['controller' => 'Threads', 'action' => 'view', $comment['Thread']['id']]); ?>">
-			                        <?php echo h($comment['Thread']['title']); ?>
-			                    </a>
-			                    (投稿日時: <?php echo h($comment['Post']['created_at']); ?>)
-			                </small>
-			            </li>
-			        <?php endforeach; ?>
+					<?php foreach ($myComments as $comment): ?>
+					    <?php 
+					        // スレッドが無効か、スレッド作成者が無効ならスキップ
+					        $isThreadInvalid = $comment['Thread']['invalid_flag'] != 0;
+					        $isThreadOwnerInvalid = false;
+					        foreach ($userLists as $user) {
+					            if ($user['User']['id'] === $comment['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+					                $isThreadOwnerInvalid = true;
+					                break; // ループを抜ける
+					            }
+					        }
+					        if ($isThreadInvalid || $isThreadOwnerInvalid) {
+					            continue; // スキップ
+					        }
+					    ?>
+					
+					    <li>
+					        <p><?php echo nl2br(h($comment['Post']['content'])); ?></p>
+					        <small>
+					            コメント先: 
+					            <a href="<?php echo $this->Html->url(['controller' => 'Threads', 'action' => 'view', $comment['Thread']['id']]); ?>">
+					                <?php echo h($comment['Thread']['title']); ?>
+					            </a>
+					            (投稿日時: <?php echo h($comment['Post']['created_at']); ?>)
+					        </small>
+					    </li>
+					<?php endforeach; ?>
 			    </ul>
 			<?php else: ?>
 			    <p>投稿したコメントはありません。</p>

@@ -36,6 +36,9 @@ class AppController extends Controller {
     
     public function beforeFilter() {
         parent::beforeFilter();
+        Configure::load('ngLists');
+//         debug(Configure::read('NgLists'));
+        
         $this->Auth->authError = false;
         // 認証不要のアクションを許可
         $this->Auth->allow(['login', 'logout', 'SignIn', 'SignUp', 'top', 'display', 'about', 'view','viewCnt', 'alllist', 'search', 'tagSearch']);
@@ -53,49 +56,94 @@ class AppController extends Controller {
         ]);
         
         $genresCounts = $this->Tag->find('all', [
-            'conditions' => ['type' => 1],
+            'conditions' => ['Tag.type' => 1], // タグの種類を絞る
             'fields' => [
                 'Tag.id',
                 'Tag.name',
-                'COUNT(ThreadsTag.thread_id) AS thread_count'
+                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count' // スレッド数をカウント
             ],
             'joins' => [
+                // threads_tags テーブルとの結合
                 [
-                    'table' => 'threads_tags', // 中間テーブル
+                    'table' => 'threads_tags',
                     'alias' => 'ThreadsTag',
                     'type' => 'LEFT',
                     'conditions' => ['ThreadsTag.tag_id = Tag.id']
-                ]
-            ],
-            'group' => ['Tag.id'], // タグごとに集計
-            'order' => ['Tag.id' => 'ASC'] // 必要に応じて並び替え
-        ]);
-        $priceCounts = $this->Tag->find('all', [
-            'conditions' => ['type' => 0],
-            'fields' => [
-                'Tag.id',
-                'Tag.name',
-                'COUNT(ThreadsTag.thread_id) AS thread_count'
-            ],
-            'joins' => [
+                ],
+                // threads テーブルとの結合（スレッドが無効化されていないものだけ）
                 [
-                    'table' => 'threads_tags', // 中間テーブル
-                    'alias' => 'ThreadsTag',
+                    'table' => 'threads',
+                    'alias' => 'Thread',
                     'type' => 'LEFT',
-                    'conditions' => ['ThreadsTag.tag_id = Tag.id']
+                    'conditions' => [
+                        'Thread.id = ThreadsTag.thread_id',
+                        'Thread.invalid_flag' => 0 // スレッドが無効化されていない
+                    ]
+                ],
+                // users テーブルとの結合（ユーザーが無効化されていないものだけ）
+                [
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'User.id = Thread.created_by',
+                        'User.invalid_flag' => 0 // ユーザーが無効化されていない
+                    ]
                 ]
             ],
             'group' => ['Tag.id'], // タグごとに集計
-            'order' => ['Tag.id' => 'ASC'] // 必要に応じて並び替え
+            'order' => ['Tag.id' => 'ASC'] // タグID順に並び替え
         ]);
         
+        $priceCounts = $this->Tag->find('all', [
+            'conditions' => ['Tag.type' => 0], // 価格帯タグのみ対象
+            'fields' => [
+                'Tag.id',
+                'Tag.name',
+                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count' // スレッド数をカウント
+            ],
+            'joins' => [
+                // threads_tags テーブルとの結合
+                [
+                    'table' => 'threads_tags',
+                    'alias' => 'ThreadsTag',
+                    'type' => 'LEFT',
+                    'conditions' => ['ThreadsTag.tag_id = Tag.id']
+                ],
+                // threads テーブルとの結合（スレッドが無効化されていないものだけ）
+                [
+                    'table' => 'threads',
+                    'alias' => 'Thread',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'Thread.id = ThreadsTag.thread_id',
+                        'Thread.invalid_flag' => 0 // スレッドが無効化されていない
+                    ]
+                ],
+                // users テーブルとの結合（ユーザーが無効化されていないものだけ）
+                [
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'User.id = Thread.created_by',
+                        'User.invalid_flag' => 0 // ユーザーが無効化されていない
+                    ]
+                ]
+            ],
+            'group' => ['Tag.id'], // タグごとに集計
+            'order' => ['Tag.id' => 'ASC'] // タグID順に並び替え
+        ]);
+        
+        $userLists = $this->User->find('all');
+//         debug($genresCounts);
+//         exit;
         // ジャンルと価格帯を統合して options を作成
         $options = $genres + $priceRanges;
         
-        return compact('genres', 'priceRanges', 'genresCounts', 'priceCounts', 'options');
+        return compact('genres', 'priceRanges', 'genresCounts', 'priceCounts', 'userLists', 'options');
     }
     
-    //検証中
     public function _getThreadsCounts($thread_id) {
         $threadCounts = $this->Post->find('all', [
             'fields' => [
@@ -126,5 +174,4 @@ class AppController extends Controller {
             'limit' => $limit,
         ]);
     }
-
 }

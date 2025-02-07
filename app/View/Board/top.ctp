@@ -62,6 +62,20 @@
     <h2>「<?= h($keyword); ?>」の検索結果</h2>
     <ul>
         <?php foreach ($results as $result): ?>
+        	<?php 
+			    // スレッドが無効か、スレッド作成者が無効ならスキップ
+			    $isThreadInvalid = $result['Thread']['invalid_flag'] != 0;
+			    $isThreadOwnerInvalid = false;
+			    foreach ($userLists as $user) {
+			        if ($user['User']['id'] === $result['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+			            $isThreadOwnerInvalid = true;
+			            break; // ループを抜ける
+			        }
+			    }
+			    if ($isThreadInvalid || $isThreadOwnerInvalid) {
+			        continue; // スキップ
+			    }
+			?>
             <li>
                 <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'view', $result['Thread']['id']]); ?>">
                     <?= h($result['Thread']['title']); ?>
@@ -75,6 +89,20 @@
     <h2>「<?= h($tagName) ?>」に関連するスレッド</h2>
     <ul class="threads-list">
         <?php foreach ($threads as $thread): ?>
+        	<?php 
+			    // スレッドが無効か、スレッド作成者が無効ならスキップ
+			    $isThreadInvalid = $thread['Thread']['invalid_flag'] != 0;
+			    $isThreadOwnerInvalid = false;
+			    foreach ($userLists as $user) {
+			        if ($user['User']['id'] === $thread['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+			            $isThreadOwnerInvalid = true;
+			            break; // ループを抜ける
+			        }
+			    }
+			    if ($isThreadInvalid || $isThreadOwnerInvalid) {
+			        continue; // スキップ
+			    }
+			?>
             <li>
                 <?= $this->Html->link(h($thread['Thread']['title']), ['action' => 'view', $thread['Thread']['id']]) ?>
             </li>
@@ -113,6 +141,20 @@
 <?php if (!empty($latestThreads)): ?>
 	<ul class="thread-list">
 	<?php foreach ($latestThreads as $thread): ?>
+		<?php 
+		    // スレッドが無効か、スレッド作成者が無効ならスキップ
+		    $isThreadInvalid = $thread['Thread']['invalid_flag'] != 0;
+		    $isThreadOwnerInvalid = false;
+		    foreach ($userLists as $user) {
+		        if ($user['User']['id'] === $thread['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+		            $isThreadOwnerInvalid = true;
+		            break; // ループを抜ける
+		        }
+		    }
+		    if ($isThreadInvalid || $isThreadOwnerInvalid) {
+		        continue; // スキップ
+		    }
+		?>
 	    <li>
 	        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
 	            <?= h($thread['Thread']['title']) ?>
@@ -148,6 +190,20 @@
 <?php if (!empty($popularThreads)): ?>
 	<ul class="thread-list">
 	<?php foreach ($popularThreads as $thread): ?>
+		<?php 
+		    // スレッドが無効か、スレッド作成者が無効ならスキップ
+		    $isThreadInvalid = $thread['Thread']['invalid_flag'] != 0;
+		    $isThreadOwnerInvalid = false;
+		    foreach ($userLists as $user) {
+		        if ($user['User']['id'] === $thread['Thread']['created_by'] && $user['User']['invalid_flag'] != 0) {
+		            $isThreadOwnerInvalid = true;
+		            break; // ループを抜ける
+		        }
+		    }
+		    if ($isThreadInvalid || $isThreadOwnerInvalid) {
+		        continue; // スキップ
+		    }
+		?>
 	    <li>
 	        <a href="<?= $this->Html->url(['controller' => 'Threads', 'action' => 'viewCnt', $thread['Thread']['id']]) ?>">
 	            <?= h($thread['Thread']['title']) ?>

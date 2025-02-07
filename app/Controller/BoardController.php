@@ -29,7 +29,8 @@ class BoardController extends AppController {
             'fields' => ['Tag.id', 'Tag.name'],
             'order' => ['Tag.id' => 'ASC']
         ]);
-        $this->set(array_merge(compact('latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName', 'tags'), $formData));
+        $userLists = $this->User->find('all');
+        $this->set(array_merge(compact('latestThreads', 'popularThreads', 'latestLists', 'popularLists', 'userName', 'userLists', 'tags'), $formData));
         $this->render('/Board/Top');
     }
     
@@ -37,22 +38,26 @@ class BoardController extends AppController {
         if ($this->request->is('post')) {
             $userId = $this->Auth->user('id');
             $dataSource = $this->Contact->getDataSource();
-            $dataSource->begin();//トランザクション開始
+            //トランザクション開始
+            $dataSource->begin();
             
             try {
                 $this->Contact->create();
                 $this->request->data['Contact']['user_id'] = $userId;
                 
                 if ($this->Contact->save($this->request->data)) {
-                    $dataSource->commit();//トランザクションをコミット
+                    //トランザクションをコミット
+                    $dataSource->commit();
                     $this->Session->setFlash('データが正常に送信されました！');
                     $this->redirect(['controller' => 'Board', 'action' => 'contactForm']);
                 } else {
-                    $dataSource->rollback();//保存のエラー時ロールバック
+                    //保存のエラー時ロールバック
+                    $dataSource->rollback();
                     $this->Session->setFlash('データの送信に失敗しました。');
                 }
             } catch (Exception $e) {
-                $dataSource->rollback();//保存のエラー時ロールバック
+                //保存のエラー時ロールバック
+                $dataSource->rollback();
                 $this->Session->setFlash($e->getMessage());
             }
         }

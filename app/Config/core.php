@@ -228,7 +228,7 @@
  */
 	Configure::write('Session', array(
 		'defaults' => 'php',
-	    //'timeout' => 30,  // 30分でセッション切れ
+	    'timeout' => 60,  // 30分でセッション切れ
 	    'cookieTimeout' => 0,
 	    'checkAgent' => true,
 	    'autoRegenerate' => true,
