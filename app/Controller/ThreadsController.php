@@ -120,8 +120,6 @@ class ThreadsController extends AppController {
         // 検証中
         $userLists = $this->User->find('all');
         
-//         debug($myComments);
-//         debug($userLists);
         // データをビューに渡す
         $this->set(compact('myThreads', 'myComments', 'userLists'));
         $this->render('/Board/mypage');
@@ -132,8 +130,6 @@ class ThreadsController extends AppController {
             $userId = $this->Auth->user('id');// ユーザーがログインしている場合、ログインユーザーのidを取得
             $dataSource = $this->Thread->getDataSource();
             $dataSource->begin();//トランザクション開始
-            //debug($this->request->data);//データベースデバック
-            //exit;
             try{
                 $this->Thread->create();
                 $this->request->data['Thread']['created_by'] = $userId;
@@ -183,7 +179,6 @@ class ThreadsController extends AppController {
                 'Tag'
             ]
         ]);
-//         debug($thread);
         $userLists = $this->User->find('all');
         $this->set(compact('thread', 'userLists'));
         $this->render('/Board/view');
@@ -208,13 +203,11 @@ class ThreadsController extends AppController {
             'contain' => [
                 'User', // スレッド作成者の情報
                 'Post' => [
-//                     'conditions' => ['Post.invalid_flag' => '0'],
                     'User' // 各コメントの投稿者の情報も取得
                 ],
                 'Tag'
             ]
         ]);
-//         debug($thread);
         $userLists = $this->User->find('all');
         $this->set(compact('thread', 'userLists')); 
         $this->render('/Board/view');  
@@ -275,7 +268,7 @@ class ThreadsController extends AppController {
                     }
                 }
                 
-                // **ループが終わった後に保存する！**
+                // ループが終わった後に保存する
                 if ($this->Post->save($data)) {
                     $dataSource->commit();
                     $this->Session->setFlash('コメントを投稿しました！');

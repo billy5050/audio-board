@@ -56,84 +56,82 @@ class AppController extends Controller {
         ]);
         
         $genresCounts = $this->Tag->find('all', [
-            'conditions' => ['Tag.type' => 1], // タグの種類を絞る
+            'conditions' => ['Tag.type' => 1],
             'fields' => [
                 'Tag.id',
                 'Tag.name',
-                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count' // スレッド数をカウント
+                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count'
             ],
             'joins' => [
-                // threads_tags テーブルとの結合
                 [
                     'table' => 'threads_tags',
                     'alias' => 'ThreadsTag',
                     'type' => 'LEFT',
                     'conditions' => ['ThreadsTag.tag_id = Tag.id']
                 ],
-                // threads テーブルとの結合（スレッドが無効化されていないものだけ）
                 [
                     'table' => 'threads',
                     'alias' => 'Thread',
                     'type' => 'LEFT',
                     'conditions' => [
                         'Thread.id = ThreadsTag.thread_id',
-                        'Thread.invalid_flag' => 0 // スレッドが無効化されていない
+                        'Thread.invalid_flag' => 0
                     ]
                 ],
-                // users テーブルとの結合（ユーザーが無効化されていないものだけ）
+                // INNER JOINに変更
                 [
                     'table' => 'users',
                     'alias' => 'User',
-                    'type' => 'LEFT',
+                    'type' => 'INNER',
                     'conditions' => [
                         'User.id = Thread.created_by',
-                        'User.invalid_flag' => 0 // ユーザーが無効化されていない
+                        'User.invalid_flag' => 0
                     ]
                 ]
             ],
-            'group' => ['Tag.id'], // タグごとに集計
-            'order' => ['Tag.id' => 'ASC'] // タグID順に並び替え
+            'group' => ['Tag.id'],
+            'order' => ['Tag.id' => 'ASC']
         ]);
         
+        
         $priceCounts = $this->Tag->find('all', [
-            'conditions' => ['Tag.type' => 0], // 価格帯タグのみ対象
+            'conditions' => ['Tag.type' => 0],
             'fields' => [
                 'Tag.id',
                 'Tag.name',
-                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count' // スレッド数をカウント
+                'COUNT(DISTINCT ThreadsTag.thread_id) AS thread_count'
             ],
             'joins' => [
-                // threads_tags テーブルとの結合
                 [
                     'table' => 'threads_tags',
                     'alias' => 'ThreadsTag',
                     'type' => 'LEFT',
                     'conditions' => ['ThreadsTag.tag_id = Tag.id']
                 ],
-                // threads テーブルとの結合（スレッドが無効化されていないものだけ）
                 [
                     'table' => 'threads',
                     'alias' => 'Thread',
                     'type' => 'LEFT',
                     'conditions' => [
                         'Thread.id = ThreadsTag.thread_id',
-                        'Thread.invalid_flag' => 0 // スレッドが無効化されていない
+                        'Thread.invalid_flag' => 0
                     ]
                 ],
-                // users テーブルとの結合（ユーザーが無効化されていないものだけ）
+                // INNER JOINに変更
                 [
                     'table' => 'users',
                     'alias' => 'User',
-                    'type' => 'LEFT',
+                    'type' => 'INNER',
                     'conditions' => [
                         'User.id = Thread.created_by',
-                        'User.invalid_flag' => 0 // ユーザーが無効化されていない
+                        'User.invalid_flag' => 0
                     ]
                 ]
             ],
-            'group' => ['Tag.id'], // タグごとに集計
-            'order' => ['Tag.id' => 'ASC'] // タグID順に並び替え
+            'group' => ['Tag.id'],
+            'order' => ['Tag.id' => 'ASC']
         ]);
+        
         
         $userLists = $this->User->find('all');
 //         debug($genresCounts);
@@ -150,9 +148,24 @@ class AppController extends Controller {
                 'Post.thread_id',
                 'COUNT(Post.content) AS comment_count'
             ],
-            'conditions' => ['Post.thread_id' => $thread_id],
+            'conditions' => [
+                'Post.thread_id'    => $thread_id,
+                'Post.invalid_flag' => 0  // Postが有効なもののみ
+            ],
+            'joins' => [
+                [
+                    'table'      => 'users',
+                    'alias'      => 'PostUser',  // エイリアス名を変更
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'PostUser.id = Post.created_by',
+                        'PostUser.invalid_flag' => 0  // Userが有効なもののみ
+                    ]
+                ]
+            ],
             'group' => ['Post.thread_id']
         ]);
+        
         return $threadCounts;
     }
     
